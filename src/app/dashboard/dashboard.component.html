@@ -1,0 +1,27 @@
+<div class="container-fluid">
+  <div class="row" style="margin-top:50px;">
+    <div class="col-12">
+      <div class="jumbotron">
+        <div class="row" *ngIf="currentUser.role === 'Administrator'">
+          <div class="col-12" style="margin-top:10px;">
+            <app-open-tickets></app-open-tickets>
+          </div>
+          <div class="col-12" style="margin-top:10px;">
+            <app-working-tickets></app-working-tickets>
+          </div>
+          <div class="col-12" style="margin-top:10px;">
+            <app-completed-tickets></app-completed-tickets>
+          </div>
+        </div>
+        <div class="row" *ngIf="currentUser.role === 'Employee'">
+          <div class="col-12" style="margin-top:10px;">
+            <app-open-tickets></app-open-tickets>
+          </div>
+          <div class="col-12" style="margin-top:10px;">
+            <app-my-tickets></app-my-tickets>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

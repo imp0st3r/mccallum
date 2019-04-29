@@ -1,0 +1,130 @@
+<div class="card" style="box-shadow:1px 1px 5px rgb(97, 97, 97);background-color:rgb(255,0,0,.25);">
+    <div class="card-header" style="text-align:center;">
+      <h5 class="card-title">Completed Tickets</h5>
+    </div>
+    <div class="card-body" style="text-align:left;background-color: #bebdbd !important;">
+      <div class="row ticket" *ngFor="let ticket of completedTickets">
+          <div class="col-12" style="cursor:pointer;" (click)="viewTicket(ticket);" data-toggle="modal" data-target="#cviewTicketModal">
+            <div class="row">
+              <div class="col-12 col-lg-4">
+                <span style="font-weight:bold;">Reference #</span><br>
+                <span>{{ticket.reference_number}}</span>
+              </div>
+              <div class="col-12 col-lg-4">
+                <span style="font-weight:bold;">Customer</span><br>
+                <span>{{ticket.customer_name}}</span>
+              </div>
+              <div class="col-12 col-lg-4">
+                <span style="font-weight:bold;">Job Number</span><br>
+                <span>{{ticket.job_number}}</span>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="cviewTicketModal" tabindex="-1" role="dialog" aria-labelledby="cviewTicketModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" *ngIf="cviewingTicket">
+        <div class="modal-header">
+          <h5 class="modal-title">Ticket Reference #: {{ cviewingTicket.reference_number }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="background-color: #bebdbd !important;padding:10px;">
+          <div class="container-fluid">
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12 col-lg-6" *ngIf="cviewingTicket.creator">
+                <p>
+                  <b>Ticket Creator: </b><br> 
+                  <span>{{cviewingTicket.creator.name}}</span><br>
+                  <b>Transaction Date: </b><br>
+                  <span>{{cviewingTicket.transaction_date | date: 'mediumDate'}}</span><br>
+                  <b>Ticket Worker: </b><br> 
+                  <span *ngIf="cviewingTicket.worker">{{cviewingTicket.worker.name}}</span>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6">
+                <p>
+                  <b>Customer Name: </b><br>
+                  <span>{{cviewingTicket.customer_name}}</span><br>
+                  <b>Job Number: </b><br>
+                  <span>{{cviewingTicket.job_number}}</span>
+                </p>
+              </div>
+            </div>
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12 col-lg-6" *ngIf="cviewingTicket.supplier">
+                <p>
+                  <b>Supplier: </b><br>
+                  <span>{{cviewingTicket.supplier.name}}</span><br>
+                  <span>{{cviewingTicket.supplier.address}}</span><br>
+                  <span>{{cviewingTicket.supplier.city}} {{cviewingTicket.supplier.state}}, {{cviewingTicket.supplier.zip}}</span><br>
+                  <span><b>ATF License: </b>{{cviewingTicket.supplier.atf_license}}</span>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" *ngIf="cviewingTicket.operator">
+                <p>
+                  <b>Operator: </b><br>
+                  <span>{{cviewingTicket.operator.name}}</span><br>
+                  <span>{{cviewingTicket.operator.city}} {{cviewingTicket.operator.state}}</span><br>
+                  <span><b>Lat: </b>{{cviewingTicket.operator.lat}}<b> Lng: </b>{{cviewingTicket.operator.lng}}</span><br>
+                  <span><b>ATF License: </b>{{cviewingTicket.operator.atf_license}}</span>
+                </p>
+              </div>
+            </div>
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12" *ngIf="cviewingTicket.items[0].item">
+                <table class="table table-responsive">
+                  <thead>
+                    <tr>
+                      <th>Explosive Product</th>
+                      <th>Date Code</th>
+                      <th>Quantity Supplied</th>
+                      <th>Quantity Received</th>
+                      <th>Quantity Used</th>
+                      <th>Quantity Returned</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of cviewingTicket.items">
+                      <td>{{item.item.name}}</td>
+                      <td>{{item.item.date_code}}</td>
+                      <td>{{item.quantity_supplied}}</td>
+                      <td>{{item.quantity_received}}</td>
+                      <td>{{item.quantity_used}}</td>
+                      <td>{{item.quantity_returned}}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;word-wrap:break-word;">
+              <div class="col-12">
+                <P>
+                  <b>Hazardous Materials Shipping Paper: </b><br>
+                  <a href="{{cviewingTicket.hazmat[0].link}}" target="_blank">{{cviewingTicket.hazmat[0].link}}</a>
+                </P>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-primary col-12" data-dismiss="modal" (click)="reopenTicket();">Reopen Ticket</button>
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-danger col-12" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

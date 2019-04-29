@@ -1,0 +1,329 @@
+<div class="container-fluid" *ngIf="currentUser">
+  <div class="row" style="margin-top:50px;" *ngIf="currentUser.role === 'Administrator'">
+    <div class="col-12">
+      <div class="jumbotron" style="padding:1rem;">
+        <h3 style="text-align:center;">McCallum Tickets</h3>
+        <div class="row">
+          <div class="col-12 col-lg-2">
+            <button type="button" class="btn btn-primary col-12" data-toggle="modal" data-target="#addTicketModal" (click)="addTicket();">Add Ticket</button>
+          </div>
+        </div>
+        <div class="row ticket" *ngFor="let ticket of tickets">
+            <div class="col-12 col-lg-10" style="cursor:pointer;" (click)="viewTicket(ticket);" data-toggle="modal" data-target="#viewTicketModal">
+              <div class="row">
+                <div class="col-12 col-lg-4">
+                  <span style="font-weight:bold;">Reference #</span><br>
+                  <span>{{ticket.reference_number}}</span>
+                </div>
+                <div class="col-12 col-lg-4">
+                  <span style="font-weight:bold;">Customer Name</span><br>
+                  <span>{{ticket.customer_name}}</span>
+                </div>
+                <div class="col-12 col-lg-2">
+                  <span style="font-weight:bold;">Job Number</span><br>
+                  <span>{{ticket.job_number}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-lg-2">
+              <div class="row">
+                <div class="col-12" style="margin:0px;">
+                  <button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#editTicketModal" (click)="editTicket(ticket);"><fa-icon [icon]="faEdit"></fa-icon></button>
+                  <button type="button" class="btn btn-danger btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#deleteTicketModal" (click)="deleteTicket(ticket);"><fa-icon [icon]="faTrash"></fa-icon></button>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="viewTicketModal" tabindex="-1" role="dialog" aria-labelledby="viewTicketModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="viewingTicket">
+      <div class="modal-header">
+        <h5 class="modal-title">Ticket Reference #: {{ viewingTicket.reference_number }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="background-color: #bebdbd !important;padding:10px;">
+        <div class="container-fluid">
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+            <div class="col-12 col-lg-6" >
+              <p>
+                <b>Ticket Creator: </b><br> 
+                <span>{{viewingTicket.user.name}}</span><br>
+                <b>Transaction Date: </b><br>
+                <span>{{viewingTicket.transaction_date | date: 'mediumDate'}}</span>
+              </p>
+            </div>
+            <div class="col-12 col-lg-6">
+              <p>
+                <b>Customer Name: </b><br>
+                <span>{{viewingTicket.customer_name}}</span><br>
+                <b>Job Number: </b><br>
+                <span>{{viewingTicket.job_number}}</span>
+              </p>
+            </div>
+          </div>
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+            <div class="col-12 col-lg-6">
+              <p>
+                <b>Supplier: </b><br>
+                <span>{{viewingTicket.supplier.name}}</span><br>
+                <span>{{viewingTicket.supplier.address}}</span><br>
+                <span>{{viewingTicket.supplier.city}} {{viewingTicket.supplier.state}}, {{viewingTicket.supplier.zip}}</span><br>
+                <span><b>ATF License: </b>{{viewingTicket.supplier.atf_license}}</span>
+              </p>
+            </div>
+            <div class="col-12 col-lg-6">
+              <p>
+                <b>Operator: </b><br>
+                <span>{{viewingTicket.operator.name}}</span><br>
+                <span>{{viewingTicket.operator.city}} {{viewingTicket.operator.state}}</span><br>
+                <span><b>Lat: </b>{{viewingTicket.operator.lat}}<b> Lng: </b>{{viewingTicket.operator.lng}}</span><br>
+                <span><b>ATF License: </b>{{viewingTicket.operator.atf_license}}</span>
+              </p>
+            </div>
+          </div>
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+            <div class="col-12">
+              <table class="table table-responsive">
+                <thead>
+                  <tr>
+                    <th>Explosive Product</th>
+                    <th>Date Code</th>
+                    <th>Quantity Supplied</th>
+                    <th>Quantity Received</th>
+                    <th>Quantity Used</th>
+                    <th>Quantity Returned</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of viewingTicket.items">
+                    <td>{{item.item.name}}</td>
+                    <td>{{item.item.date_code}}</td>
+                    <td>{{item.quantity_supplied}}</td>
+                    <td>{{item.quantity_received}}</td>
+                    <td>{{item.quantity_used}}</td>
+                    <td>{{item.quantity_returned}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+            <div class="col-12">
+              <P>
+                <b>Hazardous Materials Shipping Paper: </b><br>
+                <a href="{{viewingTicket.hazmat[0].link}}" target="_blank">{{viewingTicket.hazmat[0].link}}</a>
+              </P>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteTicketModal" tabindex="-1" role="dialog" aria-labelledby="deleteTicketModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="currentTicket">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Ticket</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you would like to delete {{currentTicket.reference_number}}?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmDelete();" data-dismiss="modal">Delete Ticket</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+      
+<div class="modal fade" id="editTicketModal" tabindex="-1" role="dialog" aria-labelledby="editTicketModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Ticket</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="editTicketForm" *ngIf="currentTicket">
+          <div class="form-group">
+            <label for="creator_id">Creator: </label>
+            <select class="form-control" formControlName="creator_id">
+              <option value="{{currentUser.id}}">{{currentUser.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="supplier_id">Supplier: </label>
+            <select class="form-control" formControlName="supplier_id">
+              <option *ngFor="let supplier of suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="operator_id">Operator: </label>
+            <select class="form-control" formControlName="operator_id">
+              <option *ngFor="let operator of operators" value="{{operator.id}}">{{operator.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="customer_name">Customer Name: </label>
+            <input type="text" class="form-control" formControlName="customer_name">
+          </div>
+          <div class="form-group">
+            <label for="transaction_date">Transaction Date: </label>
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="dp" formControlName="transaction_date" ngbDatepicker #d="ngbDatepicker" (click)="d.toggle()" (change)="displayDate();">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button"><fa-icon [icon]="faCalendar"></fa-icon></button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reference_number">Reference Number: </label>
+            <input type="text" class="form-control" formControlName="reference_number">
+          </div>
+          <div class="form-group">
+            <label for="job_number">Job Number: </label>
+            <input type="text" class="form-control" formControlName="job_number">
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary" (click)="addEProduct();">Add Product</button>
+          </div>
+          <div *ngFor="let product of eformProducts">
+              <button type="button" class="btn btn-danger btn-sm float-right" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" (click)="deleteEProduct(product);"><fa-icon [icon]="faTrash"></fa-icon></button>
+              <div class="form-group">
+                <label for="{{product.controlname}}">Product: </label>
+                <select class="form-control" formControlName="{{product.controlname}}">
+                  <option *ngFor="let item of products" value="{{item.id}}">{{item.name}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="{{product.controlname}}-supplied">Quantity Supplied: </label>
+                <input type="number" step="1" class="form-control" formControlName="{{product.controlname}}-supplied">
+              </div>
+          </div>
+          <div class="form-group">
+            <label for="efile">Hazardous Materials Shipping Paper Upload: </label><br>
+            <input *ngIf="!currentEHazMat" #efile class="form-control" type="file" accept='application/*' (change)="uploadFile(efile.files)" formControlName="efile"/><br>
+            <div class="row">
+              <div class="col-10" style="word-wrap:break-word;" *ngIf="currentEHazMat">
+                  <span style="color:green;font-weight:bold;">{{currentEHazMat.link}}</span>
+              </div>
+              <div class="col-2" *ngIf="currentEHazMat">
+                <button type="button" class="btn btn-danger btn-sm float-right" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" (click)="deleteEHazMat();"><fa-icon [icon]="faTrash"></fa-icon></button>
+              </div>
+              <div class="col-12" *ngIf="!currentEHazMat">
+                <span style="color:green;font-weight:bold;">{{uploadMessage}}</span>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="updateTicket()" data-dismiss="modal">Update Ticket</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal" (click)="cancelUpdate();">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+      
+<div class="modal fade" id="addTicketModal" tabindex="-1" role="dialog" aria-labelledby="addTicketModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="adding">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Ticket</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="addTicketForm" *ngIf="currentUser.id">
+          <div class="form-group">
+            <label for="creator_id">Creator: </label>
+            <select class="form-control" formControlName="creator_id">
+              <option value="{{currentUser.id}}">{{currentUser.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="supplier_id">Supplier: </label>
+            <select class="form-control" formControlName="supplier_id">
+              <option *ngFor="let supplier of suppliers" value="{{supplier.id}}">{{supplier.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="operator_id">Operator: </label>
+            <select class="form-control" formControlName="operator_id">
+              <option *ngFor="let operator of operators" value="{{operator.id}}">{{operator.name}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="customer_name">Customer Name: </label>
+            <input type="text" class="form-control" formControlName="customer_name">
+          </div>
+          <div class="form-group">
+            <label for="transaction_date">Transaction Date: </label>
+            <div class="input-group">
+              <input class="form-control" placeholder="yyyy-mm-dd" name="dp" formControlName="transaction_date" ngbDatepicker #d="ngbDatepicker" (click)="d.toggle()">
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" (click)="d.toggle()" type="button"><fa-icon [icon]="faCalendar"></fa-icon></button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="reference_number">Reference Number: </label>
+            <input type="text" class="form-control" formControlName="reference_number">
+          </div>
+          <div class="form-group">
+            <label for="job_number">Job Number: </label>
+            <input type="text" class="form-control" formControlName="job_number">
+          </div>
+          <div class="form-group">
+            <button type="button" class="btn btn-primary" (click)="addProduct();">Add Product</button>
+          </div>
+          <div *ngFor="let product of formProducts">
+              <button type="button" class="btn btn-danger btn-sm float-right" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" (click)="deleteProduct(product);"><fa-icon [icon]="faTrash"></fa-icon></button>
+              <div class="form-group">
+                <label for="{{product.controlname}}">Product: </label>
+                <select class="form-control" formControlName="{{product.controlname}}">
+                  <option *ngFor="let item of products" value="{{item.id}}">{{item.name}}</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="{{product.controlname}}-supplied">Quantity Supplied: </label>
+                <input type="number" step="1" class="form-control" formControlName="{{product.controlname}}-supplied">
+              </div>
+          </div>
+          <div class="form-group">
+            <label for="file">Hazardous Materials Shipping Paper Upload: </label><br>
+            <input #file type="file" accept='application/*' (change)="uploadFile(file.files)" formControlName="file"/><br>
+            <span style="color:green;font-weight:bold;">{{uploadMessage}}</span>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="createTicket()" data-dismiss="modal">Create Ticket</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+      

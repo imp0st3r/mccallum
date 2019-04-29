@@ -1,0 +1,210 @@
+<div class="container-fluid" *ngIf="currentUser">
+  <div class="row" style="margin-top:50px;" *ngIf="currentUser.role === 'Administrator'">
+    <div class="col-12">
+      <div class="jumbotron" style="padding:1rem;">
+        <h3 style="text-align:center;">McCallum User Accounts</h3>
+        <div class="row">
+          <div class="col-12 col-lg-2">
+            <button type="button" class="btn btn-primary col-12" data-toggle="modal" data-target="#addUserModal">Add User</button>
+          </div>
+        </div>
+        <div class="row ticket" *ngFor="let user of allUsers" style="cursor:pointer;" (click)="viewUser(user);">
+            <div class="col-12 col-lg-3" data-toggle="modal" data-target="#viewUserModal">
+              <span style="font-weight:bold;">Name</span><br>
+              <span>{{user.name}}</span>
+            </div>
+            <div class="col-12 col-lg-3" data-toggle="modal" data-target="#viewUserModal">
+              <span style="font-weight:bold;">Email</span><br>
+              <span>{{user.email}}</span>
+            </div>
+            <div class="col-12 col-lg-3" data-toggle="modal" data-target="#viewUserModal">
+              <span style="font-weight:bold;">Role</span><br>
+              <span>{{user.role}}</span>
+            </div>
+            <div class="col-12 col-lg-3" style="margin:0px;">
+              <button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#editUserModal" (click)="editUser(user);"><fa-icon [icon]="faEdit"></fa-icon></button>
+              <button type="button" class="btn btn-warning btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#resetPasswordModal" (click)="resetPassword(user);"><fa-icon [icon]="faLock"></fa-icon></button>
+              <button type="button" class="btn btn-danger btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#deleteUserModal" (click)="deleteUser(user);"><fa-icon [icon]="faTrash"></fa-icon></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="viewUserModal" tabindex="-1" role="dialog" aria-labelledby="viewUserModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="viewingUser">
+      <div class="modal-header">
+        <h5 class="modal-title">Viewing: {{viewingUser.name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="background-color: #bebdbd !important;padding:10px;">
+        <div class="container-fluid">
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12" >
+                <p>
+                  <b>Email: </b><br> 
+                  <span>{{viewingUser.email}}</span><br>
+                </p>
+              </div>
+              <div class="col-12" >
+                <p>
+                  <b>Role: </b><br> 
+                  <span>{{viewingUser.role}}</span><br>
+                </p>
+              </div>
+              <div class="col-12" >
+                <p>
+                  <b>Status: </b><br> 
+                  <span>{{viewingUser.status}}</span><br>
+                </p>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="currentUser">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you would like to delete {{currentUser.name}}?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmDelete();" data-dismiss="modal">Delete User</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="resetPasswordModal" tabindex="-1" role="dialog" aria-labelledby="resetPasswordModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Reset User Password</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="resetPasswordForm">
+          <div class="form-group">
+            <label for="password">New Password: </label>
+            <input type="text" class="form-control" formControlName="password">
+          </div>
+          <div class="form-group">
+            <label for="confpassword">Confirm New Password: </label>
+            <input type="text" class="form-control" formControlName="confpassword">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="updatePassword();" data-dismiss="modal">Update User</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit User Account</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="editUserForm">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+            <label for="email">Email: </label>
+            <input type="text" class="form-control" formControlName="email">
+          </div>
+          <div class="form-group">
+            <label for="role">Role: </label>
+            <select class="form-control" formControlName="role">
+              <option value="employee">Employee</option>
+              <option value="administrator">Administrator</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="updateUser();" data-dismiss="modal">Update User</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Create User Account</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+          <form [formGroup]="addUserForm">
+            <div class="form-group">
+              <label for="name">Name: </label>
+              <input type="text" class="form-control" formControlName="name">
+            </div>
+            <div class="form-group">
+              <label for="email">Email: </label>
+              <input type="text" class="form-control" formControlName="email">
+            </div>
+            <div class="form-group">
+              <label for="confemail">Confirm Email: </label>
+              <input type="text" class="form-control" formControlName="confemail">
+            </div>
+            <div class="form-group">
+              <label for="password">Password: </label>
+              <input type="password" class="form-control" formControlName="password">
+            </div>
+            <div class="form-group">
+              <label for="confpassword">Confirm Password: </label>
+              <input type="password" class="form-control" formControlName="confpassword">
+            </div>
+            <div class="form-group">
+              <label for="role">Role: </label>
+              <select class="form-control" formControlName="role">
+                <option value="employee">Employee</option>
+                <option value="administrator">Administrator</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" (click)="addUser()" data-dismiss="modal">Add User</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>

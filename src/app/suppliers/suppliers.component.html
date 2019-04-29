@@ -1,0 +1,195 @@
+<div class="container-fluid" *ngIf="currentUser">
+  <div class="row" style="margin-top:50px;" *ngIf="currentUser.role === 'Administrator'">
+    <div class="col-12">
+      <div class="jumbotron" style="padding:1rem;">
+        <h3 style="text-align:center;">McCallum Suppliers</h3>
+        <div class="row">
+          <div class="col-12 col-lg-2">
+            <button type="button" class="btn btn-primary col-12" data-toggle="modal" data-target="#addSupplierModal">Add Supplier</button>
+          </div>
+        </div>
+        <div class="row ticket" *ngFor="let supplier of suppliers" style="cursor:pointer;" (click)="viewSupplier(supplier);">
+            <div class="col-12 col-lg-5" data-toggle="modal" data-target="#viewSupplierModal">
+              <span style="font-weight:bold;">Name</span><br>
+              <span>{{supplier.name}}</span>
+            </div>
+            <div class="col-12 col-lg-5" data-toggle="modal" data-target="#viewSupplierModal">
+              <span style="font-weight:bold;">ATF License</span><br>
+              <span>{{supplier.atf_license}}</span>
+            </div>
+            <div class="col-12 col-lg-2" style="margin:0px;">
+              <button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#editSupplierModal" (click)="editSupplier(supplier);"><fa-icon [icon]="faEdit"></fa-icon></button>
+              <button type="button" class="btn btn-danger btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#deleteSupplierModal" (click)="deleteSupplier(supplier);"><fa-icon [icon]="faTrash"></fa-icon></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="viewSupplierModal" tabindex="-1" role="dialog" aria-labelledby="viewSupplierModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="viewingSupplier">
+      <div class="modal-header">
+        <h5 class="modal-title">Viewing: {{viewingSupplier.name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="background-color: #bebdbd !important;padding:10px;">
+        <div class="container-fluid">
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Address: </b><br> 
+                  <span>{{viewingSupplier.address}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>City: </b><br> 
+                  <span>{{viewingSupplier.city}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>State: </b><br> 
+                  <span>{{viewingSupplier.state}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Zip: </b><br> 
+                  <span>{{viewingSupplier.zip}}</span><br>
+                </p>
+              </div>
+              <div class="col-12" >
+                <p>
+                  <b>ATF License: </b><br> 
+                  <span>{{viewingSupplier.atf_license}}</span><br>
+                </p>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteSupplierModal" tabindex="-1" role="dialog" aria-labelledby="deleteSupplierModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="currentSupplier">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Supplier</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you would like to delete {{currentSupplier.name}}?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmDelete();" data-dismiss="modal">Delete Supplier</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+<div class="modal fade" id="editSupplierModal" tabindex="-1" role="dialog" aria-labelledby="editSupplierModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Supplier</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="editSupplierForm">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+            <label for="address">Address: </label>
+            <input type="text" class="form-control" formControlName="address">
+          </div>
+          <div class="form-group">
+            <label for="city">City: </label>
+            <input type="text" class="form-control" formControlName="city">
+          </div>
+          <div class="form-group">
+            <label for="state">State: </label>
+            <input type="text" class="form-control" formControlName="state">
+          </div>
+          <div class="form-group">
+            <label for="zip">Zip: </label>
+            <input type="text" class="form-control" formControlName="zip">
+          </div>
+          <div class="form-group">
+            <label for="atf_license">ATF License: </label>
+            <input type="text" class="form-control" formControlName="atf_license">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="updateSupplier();" data-dismiss="modal">Update Supplier</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+  
+<div class="modal fade" id="addSupplierModal" tabindex="-1" role="dialog" aria-labelledby="addSupplierModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Supplier</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="addSupplierForm">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+            <label for="address">Address: </label>
+            <input type="text" class="form-control" formControlName="address">
+          </div>
+          <div class="form-group">
+            <label for="city">City: </label>
+            <input type="text" class="form-control" formControlName="city">
+          </div>
+          <div class="form-group">
+            <label for="state">State: </label>
+            <input type="text" class="form-control" formControlName="state">
+          </div>
+          <div class="form-group">
+            <label for="zip">Zip: </label>
+            <input type="text" class="form-control" formControlName="zip">
+          </div>
+          <div class="form-group">
+            <label for="atf_license">ATF License: </label>
+            <input type="text" class="form-control" formControlName="atf_license">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addSupplier()" data-dismiss="modal">Add Supplier</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+  

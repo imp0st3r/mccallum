@@ -1,0 +1,256 @@
+<div class="card" style="box-shadow:1px 1px 5px rgb(97, 97, 97);background-color:rgba(255, 178, 36, 0.25);">
+    <div class="card-header" style="text-align:center;">
+      <h5 class="card-title">My Tickets in Progress</h5>
+    </div>
+    <div class="card-body" style="text-align:left;background-color: #bebdbd !important;">
+      <div class="row ticket" *ngFor="let ticket of workingTickets">
+          <div class="col-12" style="cursor:pointer;" (click)="viewTicket(ticket);" data-toggle="modal" data-target="#wviewTicketModal">
+            <div class="row">
+              <div class="col-12 col-lg-4">
+                <span style="font-weight:bold;">Reference #</span><br>
+                <span>{{ticket.reference_number}}</span>
+              </div>
+              <div class="col-12 col-lg-4">
+                <span style="font-weight:bold;">Customer</span><br>
+                <span>{{ticket.customer_name}}</span>
+              </div>
+              <div class="col-12 col-lg-4">
+                <span style="font-weight:bold;">Job Number</span><br>
+                <span>{{ticket.job_number}}</span>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="addReturnedModal" tabindex="-1" role="dialog" aria-labelledby="addReturnedModal" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content" *ngIf="aRetTicketItem">
+          <div class="modal-header">
+            <h5 class="modal-title">Adding Returned for: {{aRetTicketItem.item.name}}</h5>
+            <button type="button" class="close" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-12">
+                  <form [formGroup]="addReturnedForm">
+                    <div class="form-group">
+                      <label for="quantity_returned">Quantity Returned: </label>
+                      <input type="number" step="1" class="form-control" formControlName="quantity_returned">
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-12 col-lg-4" style="margin-top:5px;">
+                  <button type="button" class="btn btn-primary col-12" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal" (click)="submitReturned();">Submit</button>
+                </div>
+                <div class="col-12 col-lg-4" style="margin-top:5px;">
+                </div>
+                <div class="col-12 col-lg-4" style="margin-top:5px;">
+                  <button type="button" class="btn btn-danger col-12" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <div class="modal fade" id="addUsedModal" tabindex="-1" role="dialog" aria-labelledby="addUsedModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" *ngIf="aUsedTicketItem">
+        <div class="modal-header">
+          <h5 class="modal-title">Adding Used for: {{aUsedTicketItem.item.name}}</h5>
+          <button type="button" class="close" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <form [formGroup]="addUsedForm">
+                  <div class="form-group">
+                    <label for="quantity_used">Quantity Used: </label>
+                    <input type="number" step="1" class="form-control" formControlName="quantity_used">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-primary col-12" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal" (click)="submitUsed();">Submit</button>
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-danger col-12" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="addReceivedModal" tabindex="-1" role="dialog" aria-labelledby="addReceivedModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" *ngIf="aRecTicketItem">
+        <div class="modal-header">
+          <h5 class="modal-title">Adding Received for: {{aRecTicketItem.item.name}}</h5>
+          <button type="button" class="close" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12">
+                <form [formGroup]="addReceivedForm">
+                  <div class="form-group">
+                    <label for="quantity_received">Quantity Received: </label>
+                    <input type="number" step="1" class="form-control" formControlName="quantity_received">
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-primary col-12" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal" (click)="submitReceived();">Submit</button>
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-danger col-12" data-dismiss="modal" data-toggle="modal" data-target="#wviewTicketModal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="wviewTicketModal" tabindex="-1" role="dialog" aria-labelledby="wviewTicketModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content" *ngIf="wviewingTicket">
+        <div class="modal-header">
+          <h5 class="modal-title">Ticket Reference #: {{ wviewingTicket.reference_number }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" style="background-color: #bebdbd !important;padding:10px;">
+          <div class="container-fluid">
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12 col-lg-6" *ngIf="wviewingTicket.creator">
+                <p>
+                  <b>Ticket Creator: </b><br> 
+                  <span>{{wviewingTicket.creator.name}}</span><br>
+                  <b>Transaction Date: </b><br>
+                  <span>{{wviewingTicket.transaction_date | date: 'mediumDate'}}</span><br>
+                  <b>Ticket Worker: </b><br> 
+                  <span *ngIf="wviewingTicket.worker">{{wviewingTicket.worker.name}}</span>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6">
+                <p>
+                  <b>Customer Name: </b><br>
+                  <span>{{wviewingTicket.customer_name}}</span><br>
+                  <b>Job Number: </b><br>
+                  <span>{{wviewingTicket.job_number}}</span>
+                </p>
+              </div>
+            </div>
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12 col-lg-6" *ngIf="wviewingTicket.supplier">
+                <p>
+                  <b>Supplier: </b><br>
+                  <span>{{wviewingTicket.supplier.name}}</span><br>
+                  <span>{{wviewingTicket.supplier.address}}</span><br>
+                  <span>{{wviewingTicket.supplier.city}} {{wviewingTicket.supplier.state}}, {{wviewingTicket.supplier.zip}}</span><br>
+                  <span><b>ATF License: </b>{{wviewingTicket.supplier.atf_license}}</span>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" *ngIf="wviewingTicket.operator">
+                <p>
+                  <b>Operator: </b><br>
+                  <span>{{wviewingTicket.operator.name}}</span><br>
+                  <span>{{wviewingTicket.operator.city}} {{wviewingTicket.operator.state}}</span><br>
+                  <span><b>Lat: </b>{{wviewingTicket.operator.lat}}<b> Lng: </b>{{wviewingTicket.operator.lng}}</span><br>
+                  <span><b>ATF License: </b>{{wviewingTicket.operator.atf_license}}</span>
+                </p>
+              </div>
+            </div>
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12" *ngIf="wviewingTicket.items[0].item">
+                <table class="table table-responsive">
+                  <thead>
+                    <tr>
+                      <th>Explosive Product</th>
+                      <th>Date Code</th>
+                      <th>Quantity Supplied</th>
+                      <th>Quantity Received</th>
+                      <th>Quantity Used</th>
+                      <th>Quantity Returned</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of wviewingTicket.items">
+                      <td>{{item.item.name}}</td>
+                      <td>{{item.item.date_code}}</td>
+                      <td>{{item.quantity_supplied}}</td>
+                      <td *ngIf="item.quantity_received >= 0 && item.quantity_received != null">{{item.quantity_received}}<br><button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-dismiss="modal" data-toggle="modal" data-target="#addReceivedModal"  (click)="addReceived(item);"><fa-icon [icon]="faEdit"></fa-icon></button></td>
+                      <td *ngIf="item.quantity_received === null"><button type="button" class="btn btn-primary" data-dismiss="modal"  data-toggle="modal" data-target="#addReceivedModal" (click)="addReceived(item);">Add</button></td>
+                      <td *ngIf="item.quantity_used >= 0 && item.quantity_used != null">{{item.quantity_used}}<br><button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-dismiss="modal" data-toggle="modal" data-target="#addUsedModal"  (click)="addUsed(item);"><fa-icon [icon]="faEdit"></fa-icon></button></td>
+                      <td *ngIf="item.quantity_used === null"><button type="button" class="btn btn-primary" data-dismiss="modal"  data-toggle="modal" data-target="#addUsedModal" (click)="addUsed(item);">Add</button></td>
+                      <td *ngIf="item.quantity_returned >= 0 && item.quantity_returned != null">{{item.quantity_returned}}<br><button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-dismiss="modal" data-toggle="modal" data-target="#addReturnedModal"  (click)="addReturned(item);"><fa-icon [icon]="faEdit"></fa-icon></button></td>
+                      <td *ngIf="item.quantity_returned === null"><button type="button" class="btn btn-primary" data-dismiss="modal"  data-toggle="modal" data-target="#addReturnedModal" (click)="addReturned(item);">Add</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;word-wrap:break-word;">
+              <div class="col-12">
+                <P>
+                  <b>Hazardous Materials Shipping Paper: </b><br>
+                  <a href="{{wviewingTicket.hazmat[0].link}}" target="_blank">{{wviewingTicket.hazmat[0].link}}</a>
+                </P>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-primary col-12" data-dismiss="modal" (click)="dismissTicket();">Dismiss Ticket</button>
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-success col-12" data-dismiss="modal" (click)="submitTicket();">Submit Ticket</button>
+              </div>
+              <div class="col-12 col-lg-4" style="margin-top:5px;">
+                <button type="button" class="btn btn-danger col-12" data-dismiss="modal">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

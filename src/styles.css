@@ -1,0 +1,13 @@
+/* You can add global styles to this file, and also import other style files */
+body { 
+    background-color: #bebdbd !important;
+}
+
+.navbar {
+    padding-top:0px !important;
+    padding-bottom:0px !important;
+}
+.navbar-brand {
+    padding-top:0px !important;
+    padding-bottom:0px !important;
+}

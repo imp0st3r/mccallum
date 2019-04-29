@@ -1,0 +1,195 @@
+<div class="container-fluid" *ngIf="currentUser">
+  <div class="row" style="margin-top:50px;" *ngIf="currentUser.role === 'Administrator'">
+    <div class="col-12">
+      <div class="jumbotron" style="padding:1rem;">
+        <h3 style="text-align:center;">McCallum Operators</h3>
+        <div class="row">
+          <div class="col-12 col-lg-2">
+            <button type="button" class="btn btn-primary col-12" data-toggle="modal" data-target="#addOperatorModal">Add Operator</button>
+          </div>
+        </div>
+        <div class="row ticket" *ngFor="let operator of operators" style="cursor:pointer;" (click)="viewOperator(operator);">
+            <div class="col-12 col-lg-5" data-toggle="modal" data-target="#viewOperatorModal">
+              <span style="font-weight:bold;">Name</span><br>
+              <span>{{operator.name}}</span>
+            </div>
+            <div class="col-12 col-lg-5" data-toggle="modal" data-target="#viewOperatorModal">
+              <span style="font-weight:bold;">ATF License</span><br>
+              <span>{{operator.atf_license}}</span>
+            </div>
+            <div class="col-12 col-lg-2" style="margin:0px;">
+              <button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#editOperatorModal" (click)="editOperator(operator);"><fa-icon [icon]="faEdit"></fa-icon></button>
+              <button type="button" class="btn btn-danger btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#deleteOperatorModal" (click)="deleteOperator(operator);"><fa-icon [icon]="faTrash"></fa-icon></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="viewOperatorModal" tabindex="-1" role="dialog" aria-labelledby="viewOperatorModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="viewingOperator">
+      <div class="modal-header">
+        <h5 class="modal-title">Viewing: {{viewingOperator.name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="background-color: #bebdbd !important;padding:10px;">
+        <div class="container-fluid">
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>City: </b><br> 
+                  <span>{{viewingOperator.city}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>State: </b><br> 
+                  <span>{{viewingOperator.state}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Latitude: </b><br> 
+                  <span>{{viewingOperator.lat}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Longitude: </b><br> 
+                  <span>{{viewingOperator.lng}}</span><br>
+                </p>
+              </div>
+              <div class="col-12" >
+                <p>
+                  <b>ATF License: </b><br> 
+                  <span>{{viewingOperator.atf_license}}</span><br>
+                </p>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteOperatorModal" tabindex="-1" role="dialog" aria-labelledby="deleteOperatorModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="currentOperator">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Operator</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you would like to delete {{currentOperator.name}}?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmDelete();" data-dismiss="modal">Delete Operator</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+<div class="modal fade" id="editOperatorModal" tabindex="-1" role="dialog" aria-labelledby="editOperatorModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Operator</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="editOperatorForm">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+            <label for="lat">Latitude: </label>
+            <input type="text" class="form-control" formControlName="lat">
+          </div>
+          <div class="form-group">
+            <label for="lng">Longitude: </label>
+            <input type="text" class="form-control" formControlName="lng">
+          </div>
+          <div class="form-group">
+            <label for="city">City: </label>
+            <input type="text" class="form-control" formControlName="city">
+          </div>
+          <div class="form-group">
+            <label for="state">State: </label>
+            <input type="text" class="form-control" formControlName="state">
+          </div>
+          <div class="form-group">
+            <label for="atf_license">ATF License: </label>
+            <input type="text" class="form-control" formControlName="atf_license">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="updateOperator();" data-dismiss="modal">Update Operator</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+    
+<div class="modal fade" id="addOperatorModal" tabindex="-1" role="dialog" aria-labelledby="addOperatorModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Operator</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="addOperatorForm">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+              <label for="lat">Latitude: </label>
+              <input type="text" class="form-control" formControlName="lat">
+            </div>
+            <div class="form-group">
+              <label for="lng">Longitude: </label>
+              <input type="text" class="form-control" formControlName="lng">
+            </div>
+            <div class="form-group">
+              <label for="city">City: </label>
+              <input type="text" class="form-control" formControlName="city">
+            </div>
+            <div class="form-group">
+              <label for="state">State: </label>
+              <input type="text" class="form-control" formControlName="state">
+            </div>
+            <div class="form-group">
+              <label for="atf_license">ATF License: </label>
+              <input type="text" class="form-control" formControlName="atf_license">
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addOperator()" data-dismiss="modal">Add Operator</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+    

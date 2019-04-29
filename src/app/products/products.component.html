@@ -1,0 +1,237 @@
+<div class="container-fluid" *ngIf="currentUser">
+  <div class="row" style="margin-top:50px;" *ngIf="currentUser.role === 'Administrator'">
+    <div class="col-12">
+      <div class="jumbotron" style="padding:1rem;">
+        <h3 style="text-align:center;">McCallum Products</h3>
+        <div class="row">
+          <div class="col-12 col-lg-2">
+            <button type="button" class="btn btn-primary col-12" data-toggle="modal" data-target="#addProductModal">Add Product</button>
+          </div>
+        </div>
+        <div class="row ticket" *ngFor="let product of products" style="cursor:pointer;" (click)="viewProduct(product);">
+            <div class="col-12 col-lg-5" data-toggle="modal" data-target="#viewProductModal">
+              <span style="font-weight:bold;">Name</span><br>
+              <span>{{product.name}}</span>
+            </div>
+            <div class="col-12 col-lg-5" data-toggle="modal" data-target="#viewProductModal">
+              <span style="font-weight:bold;">Date Code</span><br>
+              <span>{{product.date_code}}</span>
+            </div>
+            <div class="col-12 col-lg-2" style="margin:0px;">
+              <button type="button" class="btn btn-info btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#editProductModal" (click)="editProduct(product);"><fa-icon [icon]="faEdit"></fa-icon></button>
+              <button type="button" class="btn btn-danger btn-sm" style="margin:5px;padding:10px;padding-left:15px;padding-right:13px;" data-toggle="modal" data-target="#deleteProductModal" (click)="deleteProduct(product);"><fa-icon [icon]="faTrash"></fa-icon></button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="viewProductModal" tabindex="-1" role="dialog" aria-labelledby="viewProductModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="viewingProduct">
+      <div class="modal-header">
+        <h5 class="modal-title">Viewing: {{viewingProduct.name}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" style="background-color: #bebdbd !important;padding:10px;">
+        <div class="container-fluid">
+          <div class="row" style="box-shadow:1px 1px 2px #000;border-radius:5px;background-color:#fff;margin:5px;">
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Size: </b><br> 
+                  <span>{{viewingProduct.size}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Unit: </b><br> 
+                  <span>{{viewingProduct.unit}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Case Size: </b><br> 
+                  <span>{{viewingProduct.case_size}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Weight Each: </b><br> 
+                  <span>{{viewingProduct.weight_each}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Case Weight: </b><br> 
+                  <span>{{viewingProduct.cs_weight}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Each Weight Per Box: </b><br> 
+                  <span>{{viewingProduct.ea_weight_per_box}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Per Box Case Weight: </b><br> 
+                  <span>{{viewingProduct.per_box_cs_wt}}</span><br>
+                </p>
+              </div>
+              <div class="col-12 col-lg-6" >
+                <p>
+                  <b>Date Code: </b><br> 
+                  <span>{{viewingProduct.date_code}}</span><br>
+                </p>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" *ngIf="currentProduct">
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you would like to delete {{currentProduct.name}}?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="confirmDelete();" data-dismiss="modal">Delete Product</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+      
+<div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="editProductForm">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+            <label for="size">Size: </label>
+            <input type="text" class="form-control" formControlName="size">
+          </div>
+          <div class="form-group">
+            <label for="unit">Unit: </label>
+            <input type="text" class="form-control" formControlName="unit">
+          </div>
+          <div class="form-group">
+            <label for="case_size">Case Size: </label>
+            <input type="text" class="form-control" formControlName="case_size">
+          </div>
+          <div class="form-group">
+            <label for="weight_each">Weight Each: </label>
+            <input type="text" class="form-control" formControlName="weight_each">
+          </div>
+          <div class="form-group">
+            <label for="cs_weight">Case Weight: </label>
+            <input type="text" class="form-control" formControlName="cs_weight">
+          </div>
+          <div class="form-group">
+            <label for="ea_weight_per_box">Each Weight Per Box: </label>
+            <input type="text" class="form-control" formControlName="ea_weight_per_box">
+          </div>
+          <div class="form-group">
+            <label for="per_box_cs_wt">Per Box Case Weight: </label>
+            <input type="text" class="form-control" formControlName="per_box_cs_wt">
+          </div>
+          <div class="form-group">
+            <label for="date_code">Date Code: </label>
+            <input type="text" class="form-control" formControlName="date_code">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="updateProduct();" data-dismiss="modal">Update Product</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+      
+<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog" aria-labelledby="addProductModal" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Create Product</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" *ngIf="formError && formError != '' ">{{formError}}</div>
+        <form [formGroup]="addProductForm">
+          <div class="form-group">
+            <label for="name">Name: </label>
+            <input type="text" class="form-control" formControlName="name">
+          </div>
+          <div class="form-group">
+            <label for="size">Size: </label>
+            <input type="text" class="form-control" formControlName="size">
+          </div>
+          <div class="form-group">
+            <label for="unit">Unit: </label>
+            <input type="text" class="form-control" formControlName="unit">
+          </div>
+          <div class="form-group">
+            <label for="case_size">Case Size: </label>
+            <input type="text" class="form-control" formControlName="case_size">
+          </div>
+          <div class="form-group">
+            <label for="weight_each">Weight Each: </label>
+            <input type="text" class="form-control" formControlName="weight_each">
+          </div>
+          <div class="form-group">
+            <label for="cs_weight">Case Weight: </label>
+            <input type="text" class="form-control" formControlName="cs_weight">
+          </div>
+          <div class="form-group">
+            <label for="ea_weight_per_box">Each Weight Per Box: </label>
+            <input type="text" class="form-control" formControlName="ea_weight_per_box">
+          </div>
+          <div class="form-group">
+            <label for="per_box_cs_wt">Per Box Case Weight: </label>
+            <input type="text" class="form-control" formControlName="per_box_cs_wt">
+          </div>
+          <div class="form-group">
+            <label for="date_code">Date Code: </label>
+            <input type="text" class="form-control" formControlName="date_code">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addProduct()" data-dismiss="modal">Add Product</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+      
